@@ -5,12 +5,34 @@ static void do_head(FILE *f, long nlines);
 
 int main(int argc, char *argv[])
 {
+	long nlines;
+
 	if (argc < 2) {
-		fprintf(stderr, "Usage: %s n\n", argv[0]);
+		fprintf(stderr, "Usage: %s n [file file...]\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
-	do_head(stdin, atol(argv[1]));
+	nlines = atol(argv[1]);
+
+	if (argc == 2) {
+		do_head(stdin, nlines);
+	}
+	else {
+		int i;
+
+		for (i = 2; i < argc; i++) {
+			FILE *f;
+
+			f = fopen(argv[i], "r");
+			if (f == NULL) {
+				perror(argv[i]);
+				return EXIT_FAILURE;
+			}
+			do_head(f, nlines);
+			fclose(f);
+		}
+	}
+
 	return EXIT_SUCCESS;
 }
 
